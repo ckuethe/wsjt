@@ -77,7 +77,7 @@ C  Node is acceptable.  If first time visiting this node, tighten threshold:
 
 C  Move forward
             gamma(np+1)=ngamma
-            nstate(np+1)=nstate(np)+nstate(np)
+            nstate(np+1)=ishft(nstate(np),1)
             np=np+1
             if(np.eq.nbits-1) go to 100     !We're done!
 
