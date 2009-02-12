@@ -5,75 +5,60 @@ FC = df
 #To do bounds checking (with useless reports) put "/check:all" in the
 # --opt= line below (line 56, more or less ...)
 #FFLAGS = /traceback /check:all
-FFLAGS = /traceback /fast /nologo /warn
+FFLAGS = /traceback /fast /nologo /check:all
 
-all:    JT65code.exe WSJT7.EXE
+all:    MAP65.EXE plrs.exe
 
-OBJS1 = igray.obj init_rs.obj encode_rs.obj decode_rs.obj wrapkarn.obj
+OBJS2C   = init_rs.o encode_rs.o decode_rs.o jtaudio.o plrr_subs.o
 
-JT65code.exe: $(OBJS1)
-	$(FC) /traceback /fast /nologo /exe:JT65code.exe JT65code_all.f $(OBJS1)
+F2PYONLY = ftn_init ftn_quit audio_init getfile azdist0 astro0 spec
 
-OBJS2C   = init_rs.o encode_rs.o decode_rs.o jtaudio.o fano.o tab.o \
-	nhash.o
+SRCS2F90 = a2d.f90 astro0.f90 audio_init.f90 azdist0.f90 \
+	decode1.f90 ftn_init.f90 ftn_quit.f90 wsjtgen.f90 \
+	runqqq.f90 fivehz.f90 flushqqq.f90 \
+	rfile.f90 rfile3a.f90 spec.f90 map65a.F90 display.F90 \
+	getfile.f90 getfile2.f90 recvpkt.f90 savetf2.F90 \
+	symspec.f90 sec_midn.F90 getdphi.f90
 
-F2PYONLY = ftn_init ftn_quit audio_init spec getfile azdist0 astro0 chkt0
+SRCSCOM = datcom.f90 gcom1.f90 gcom2.f90 gcom3.f90 gcom4.f90 spcom.f90
 
-SRCS2F90 = a2d.f90 abc441.f90 astro0.f90 audio_init.f90 azdist0.f90 \
-	blanker.f90 decode1.f90 decode2.f90 decode3.f90 ftn_init.f90 \
-	ftn_quit.f90 get_fname.f90 getfile.f90 horizspec.f90 hscroll.f90 \
-	pix2d.f90 pix2d65.f90 rfile.f90 savedata.f90 spec.f90 \
-	wsjtgen.f90 runqqq.f90 fivehz.f90 msgparms.f90 chkt0.f90 \
-	genwspr.f90 wqencode.f90 wqdecode.f90 packpfx.f90 unpackpfx.f90 \
-	hash.f90 packprop.f90 unpackprop.f90 packname.f90 unpackname.f90 \
-	packtext2.f90 unpacktext2.f90 wsjtwspr.f90 gen64.f90
-
-SRCS2F77 = wsjt1.f avesp2.f bzap.f spec441.f spec2d.f mtdecode.f \
-	stdecode.f indexx.f s2shape.f flat2.f gen65.f gen24.f entail.f \
-	genmet.f wsjt24.f sync24.f ps24.f fourt.f xcor24.f decode24.f\
-	chkmsg.f gen6m.f interleave24.f \
-	gentone.f syncf0.f syncf1.f synct.f decode6m.f avemsg6m.f \
-	set.f flatten.f db.f pctile.f sort.f ssort.f ps.f smooth.f ping.f \
-	longx.f peakup.f sync.f detect.f avemsg65.f decode65.f demod64a.f \
-	encode65.f extract.f chkhist.f flat1.f four2.f gencw.f \
-	gencwid.f msgtype.f getpfx1.f \
-	getpfx2.f getsnr.f graycode.f grid2k.f interleave63.f k2grid.f \
-	limit.f lpf1.f deep65.f morse.f nchar.f packcall.f packgrid.f \
-	packmsg.f packtext.f setup65.f short65.f slope.f spec2d65.f \
-	sync65.f unpackcall.f unpackgrid.f unpackmsg.f unpacktext.f \
-	xcor.f xfft.f xfft2.f wsjt65.f astro.f azdist.f coord.f dcoord.f \
+SRCS2F77 = indexx.f gen65.f chkmsg.f \
+	gentone.f gencwid.f set.f db.f pctile.f sort.f ssort.f \
+	avemsg65.f demod64a.f encode65.f extract.f four2a.f getpfx1.f \
+	getpfx2.f graycode.f grid2k.f interleave63.f k2grid.f \
+	deep65.f morse.f nchar.f packcall.f packgrid.f \
+	packmsg.f packtext.f setup65.f unpackcall.f unpackgrid.f \
+	unpackmsg.f unpacktext.f astro.f azdist.f coord.f dcoord.f \
 	deg2grid.f dot.f ftsky.f geocentric.f GeoDist.f grid2deg.f \
 	moon2.f MoonDop.f sun.f toxyz.f pfxdump.f \
-	ftpeak65.f fil651.f fil652.f fil653.f symsync65.f \
-	encode232.f inter_mept.f pack50.f unpack50.f \
-	filbig2.F mept162a.f twkfreq.f sync162.f decode162.f \
-	ps162.f fchisq.f fano232.f ccf2.f wsjt64.f sync64.f
+	ccf65.f trimlist.f chkhist.f decode1a.f \
+	filbig.f fil6521.f twkfreq.f decode65b.f \
+	afc65b.f fchisq.f ccf2.f
 
-SRCS2C   = resample.c ptt.c igray.c wrapkarn.c
+SRCS2C   = ptt.c igray.c wrapkarn.c rfile3.c
 
-WSJT7.EXE: Audio.pyd wsjt.spec
-	python c:\python23\installer\Build.py wsjt.spec
-	-del WSJT7.EXE
-	REN wsjt.exe WSJT7.EXE
+MAP65.EXE: Audio.pyd map65.spec
+	python c:\python23\installer\Build.py map65.spec
 
-Audio.pyd: $(OBJS2C) $(SRCS2F90) $(SRCS2F77) $(SRCS2C) 
+plrs.exe: plrs.f90 sec_midn.F90 plrs_subs_win.c
+	cl /c /Foplrs_subs.obj plrs_subs_win.c
+	df /fpp /define:CVF plrs.f90 sec_midn.F90 plrs_subs.obj  \
+	  /link ws2_32.lib
+
+Audio.pyd: $(OBJS2C) $(SRCS2F90) $(SRCS2F77) $(SRCS2C) $(SRCSCOM)
 	python f2py.py -c \
 	--quiet --"fcompiler=compaqv" \
 	--opt="/nologo /traceback /warn:errors /fast /fpp /define:CVF \
 	      /define:USE_PORTAUDIO" \
 	$(OBJS2C) \
-	-lwinmm -lpa -lfftw3single -llibsamplerate \
+	-lwinmm -lws2_32 -lpa -lfftw3single -llibsamplerate \
 	-m Audio \
 	only: $(F2PYONLY) : \
 	$(SRCS2F90) $(SRCS2F77) $(SRCS2C)
-	mv Audio.pyd WsjtMod/Audio.pyd
-	cp WsjtMod/Audio.pyd Audio.pyd 
 
-
-wsjt.spec: wsjt.py WsjtMod/astro.py WsjtMod/g.py WsjtMod/options.py \
-	WsjtMod/palettes.py WsjtMod/smeter.py WsjtMod/specjt.py
+map65.spec: map65.py astro.py g.py options.py palettes.py smeter.py specjt.py
 	python c:\python23\installer\makespec.py --icon wsjt.ico \
-	--tk --onefile wsjt.py
+	--tk --onefile map65.py
 
 jtaudio.o: jtaudio.c
 	$(CC) /nologo /c /DWin32 /Fojtaudio.o jtaudio.c
@@ -102,17 +87,10 @@ wrapkarn.obj: wrapkarn.c
 igray.obj: igray.c
 	$(CC) /nologo /c /DCVF=1 igray.c
 
-fano.o: fano.c
-	$(CC) /nologo /c /Fofano.o fano.c
-
-nhash.o: nhash.c
-	$(CC) /nologo /c /Fonhash.o nhash.c
-tab.o: tab.c
-	$(CC) /nologo /c /Fotab.o tab.c
+plrr_subs.o: plrr_subs_win.c
+	$(CC) /nologo /c plrr_subs_win.c /Foplrr_subs.o
 
 .PHONY : clean
 
 clean:
-    -del *.o *.obj JT65code.exe wsjt7.exe wsjt.spec Audio.pyd
-
-
+    -del *.o *.obj MAP65.EXE Audio.pyd map65.spec

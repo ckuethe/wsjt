@@ -66,8 +66,7 @@ C  Determine the reference symbols for each data symbol.
          enddo
          go to 22
  20      mref(k,2)=m+n
- 22   continue
-      enddo
+ 22   enddo
 
 C  Now do it all again, using opposite logic on pr(i)
       k=0
@@ -101,8 +100,7 @@ C  Now do it all again, using opposite logic on pr(i)
          enddo
          go to 122
  120     mref2(k,2)=m+n
- 122  continue
-      enddo
+ 122  enddo
 
       return
       end

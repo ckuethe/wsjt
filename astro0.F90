@@ -1,3 +1,4 @@
+!--------------------------------------------------- astro0
 subroutine astro0(nyear,month,nday,uth8,nfreq,grid,cauxra,cauxdec,       &
      AzSun8,ElSun8,AzMoon8,ElMoon8,AzMoonB8,ElMoonB8,ntsky,ndop,ndop00,  &
      dbMoon8,RAMoon8,DecMoon8,HA8,Dgrd8,sd8,poloffset8,xnr8,dfdt,dfdt0,  &
@@ -9,7 +10,7 @@ subroutine astro0(nyear,month,nday,uth8,nfreq,grid,cauxra,cauxdec,       &
   character grid*6
   character*9 cauxra,cauxdec
   real*8 AzSun8,ElSun8,AzMoon8,ElMoon8,AzMoonB8,ElMoonB8,AzAux8,ElAux8
-  real*8 dbMoon8,RAMoon8,DecMoon8,HA8,Dgrd8,xnr8,dfdt,dfdt0,dt
+  real*8 dbMoon8,RAMoon8,DecMoon8,HA8,Dgrd8,xnr8,dfdt,dfdt0
   real*8 sd8,poloffset8
   include 'gcom2.f90'
   data uth8z/0.d0/,imin0/-99/
@@ -43,13 +44,8 @@ subroutine astro0(nyear,month,nday,uth8,nfreq,grid,cauxra,cauxdec,       &
      if(mode(5:5).eq.'B') mode65=2
      if(mode(5:5).eq.'C') mode65=4
   endif
-  if(mode(1:4).eq.'Echo') nmode=3
-  if(mode(1:4).eq.'JT6M') nmode=4
-  if(mode(1:2).eq.'CW') nmode=5
-  if(mode(1:3).eq.'JT2') nmode=6
-  if(mode(1:3).eq.'JT4') nmode=7
-  if(mode(1:4).eq.'WSPR') nmode=8
-  if(mode(1:4).eq.'JT64') nmode=9
+  if(mode.eq.'Echo') nmode=3
+  if(mode.eq.'JT6M') nmode=4
   uth=uth8
 
   call astro(AppDir,nyear,month,nday,uth,nfreq,hisgrid,2,nmode,1,    &
@@ -104,16 +100,19 @@ subroutine astro0(nyear,month,nday,uth8,nfreq,grid,cauxra,cauxdec,       &
      im=mod(imin,60)
      is=mod(isec,60)
      rewind 14
-     write(14,1010,err=800) ih,im,is,AzMoon,ElMoon,                          &
+     write(14,1010) ih,im,is,AzMoon,ElMoon,                          &
         ih,im,is,AzSun,ElSun,                                        &
         ih,im,is,AzAux,ElAux,                                        &
-        nfreq,doppler,dfdt,doppler00,dfdt0
+        nfreq,doppler,dfdt,doppler00,dfdt0,                          &
+        mousefqso,nsetftx
 1010 format(i2.2,':',i2.2,':',i2.2,',',f5.1,',',f5.1,',Moon'/        &
             i2.2,':',i2.2,':',i2.2,',',f5.1,',',f5.1,',Sun'/         &
             i2.2,':',i2.2,':',i2.2,',',f5.1,',',f5.1,',Source'/      &
-            i4,',',f8.1,',',f8.2,',',f8.1,',',f8.2,',Doppler')
-     rewind 14
-800  isec0=isec
+            i4,',',f8.1,',',f8.2,',',f8.1,',',f8.2,',Doppler'/       &
+            i4,',',i1,',fQSO')
+     call flushqqq(14)
+     nsetftx=0
+     isec0=isec
   endif
 
   return

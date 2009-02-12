@@ -10,8 +10,8 @@ C  reference spectrum (with birdies removed) to flatten the passband.
       real birdie(nbins)              !Spec (with birdies) for plot, in dB
       real variance(nbins)
       real ref2(750)                  !Work array
-      real power(750)
- 
+      real power(300)
+      
 C  Find power in each time block, then get median
       do j=1,jz
          s=0.
@@ -59,7 +59,6 @@ C  Get grand average, and average of spectra with power below median.
          birdie(i)=ref(i)                   !Copy ref into birdie
       enddo
 
-      kpk=0 !shut up compiler warnings -db
 C  Compute smoothed reference spectrum with narrow lines (birdies) removed
       do i=4,nbins-3
          rmax=-1.e10

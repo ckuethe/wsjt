@@ -1,5 +1,5 @@
-      subroutine avemsg65(mseg,mode65,ndepth,nchallenge,decoded,nused,
-     +  nq1,nq2,neme,mycall,hiscall,hisgrid,qual,
+      subroutine avemsg65(mseg,mode65,ndepth,decoded,nused,
+     +  nq1,nq2,neme,nsked,mycall,hiscall,hisgrid,qual,
      +  ns,ncount)
 
 C  Decodes averaged JT65 data for the specified segment (mseg=1 or 2).
@@ -8,6 +8,7 @@ C  Decodes averaged JT65 data for the specified segment (mseg=1 or 2).
       character decoded*22,deepmsg*22
       character mycall*12,hiscall*12,hisgrid*6
       real s3(64,63)
+      logical ltext
       common/ave/ppsave(64,63,MAXAVE),nflag(MAXAVE),nsave,iseg(MAXAVE)
 
 C  Count the available spectra for this Monitor segment (mseg=1 or 2),
@@ -36,14 +37,14 @@ C  Compute the average of all flagged spectra for this segment.
       enddo
 
       nadd=nused*mode65
-      call extract(s3,nadd,ncount,decoded)     !Extract the message
+      call extract(s3,nadd,ncount,decoded,ltext)     !Extract the message
       if(ncount.lt.0) decoded='                      '
 
       nqual=0
 C  Possibly should pass nadd=nused, also:
       if(ndepth.ge.3) then
          flipx=1.0                     !Normal flip not relevant for ave msg
-         call deep65(s3,mode65,neme,nchallenge,flipx, 
+         call deep65(s3,mode65,neme,nsked,flipx, 
      +   mycall,hiscall,hisgrid,deepmsg,qual)
          nqual=qual
          if(nqual.lt.nq1) deepmsg='                      '

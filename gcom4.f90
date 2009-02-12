@@ -5,7 +5,6 @@ integer*2 d2c          !Rx data recovered from recorded file     GUI
 integer jzc            !Length of data available in d2c          GUI
 character filename*24  !Name of wave file read from disk         GUI
 
-parameter (ND2CMAX=120*12000)
-common/gcom4/addpfx,d2c(ND2CMAX),jzc,filename
+common/gcom4/addpfx,d2c(661500),jzc,filename
 
 !### volatile /gcom4/

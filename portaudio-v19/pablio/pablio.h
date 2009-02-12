@@ -53,8 +53,7 @@ typedef struct
 {
     RingBuffer   inFIFO;
     RingBuffer   outFIFO;
-  //    PortAudioStream *stream;
-    PaStream *stream;
+    PortAudioStream *stream;
     int          bytesPerFrame;
     int          samplesPerFrame;
 }

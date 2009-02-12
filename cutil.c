@@ -4,15 +4,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
-#ifdef STARNIX
-#include <sys/times.h>
-#include <time.h>
-#include <sys/time.h>
-#else
+// #include <sys/times.h>
+// #include <time.h>
+// #include <sys/time.h>
 #include "sleep.h"
 #include "timeval.h"
-#endif
 
 /*  FORTRAN:  fd = close(filedes)      */
 int close_(int *filedes)
@@ -58,17 +54,15 @@ int lseek_(int *fd,int *offset, int *origin)
 //}
 
 /* usleep(3) */
-int usleep_(unsigned long *microsec)
+void usleep_(unsigned long *microsec)
 {
   usleep(*microsec);
-  return(0);
 }
 
 /* returns random numbers between 0 and 32767 to FORTRAN program */
 int iran_(int *arg)
 {
   return (rand());
-  return(0);
 }
 
 int exit_(int *n)
@@ -76,6 +70,14 @@ int exit_(int *n)
   printf("\n\n");
   exit(*n);
 }
+
+/*
+struct tm *
+gmtime_r_(const time_t *clock, struct tm *result)
+{
+  gmtime_r(clock, result);
+}
+*/
 
 time_t time_(void)
 {

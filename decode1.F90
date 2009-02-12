@@ -9,39 +9,43 @@ subroutine decode1(iarg)
 
   character sending0*28,mode0*6,cshort*11
   integer sendingsh0
-  
+
+  include 'datcom.f90'
   include 'gcom1.f90'
   include 'gcom2.f90'
   include 'gcom3.f90'
   include 'gcom4.f90'
-
+  data kbuf0/0/,ns00/-999/
   data sending0/'                      '/
   save
 
-  ntr0=iarg                                    !Silence compiler warning
-  ntr0=ntr
+  kkdone=-99
   ns0=999999
 
 10 continue
-  if(mode(1:4).eq.'JT65' .or. mode(1:3).eq.'JT2' .or. mode(1:3).eq.'JT4'  &
-       .or. mode(1:2).eq.'CW' .or. mode(1:4).eq.'WSPR' .or.               &
-       mode(1:4).eq.'JT64') then
-     if(rxdone) then
-        call savedata
-        newdat2=1
-        rxdone=.false.
-     endif
-  else
-     if(ntr.ne.ntr0 .and. monitoring.gt.0) then
-        if(ntr.ne.TxFirst .or. (lauto.eq.0)) call savedata
-        ntr0=ntr
-     endif
+  if(newdat2.gt.0) then
+     call getfile2(fname80,nlen)
+     newdat2=0
+     kbuf=1
+     kk=NSMAX
+     kkdone=0
+     newdat=1
   endif
 
-  if(ndecoding.gt.0) then
+  if(kbuf.ne.kbuf0) kkdone=0
+  kbuf0=kbuf
+  kkk=kk
+  if(kbuf.eq.2) kkk=kk-5760000
+  n=Tsec
+
+  if((ndiskdat.eq.1 .or. ndecoding.eq.0) .and. ((kkk-kkdone).gt.32768)) then
+     call symspec(id,kbuf,kk,kkdone,nutc,newdat)
+     call sleep_msec(10)
+  endif
+
+  if(ndecoding.gt.0 .and. mode(1:4).eq.'JT65') then
      ndecdone=0
-     call decode2
-     ndecdone=1
+     call map65a(newdat)
      if(mousebutton.eq.0) ndecoding0=ndecoding
      ndecoding=0
   endif
@@ -50,11 +54,9 @@ subroutine decode1(iarg)
      rewind 21
      ns0=999999
   endif
-  n=Tsec
   if(n.lt.ns0 .and. utcdate(1:1).eq.'2') then
      write(21,1001) utcdate(:11)
 1001 format(/'UTC Date: ',a11/'---------------------')
-     call flushqqq(21)
      ns0=n
   endif
 
@@ -72,13 +74,8 @@ subroutine decode1(iarg)
      sendingsh0=sendingsh
      mode0=mode
   endif
-       
-#ifdef CVF
-  call sleepqq(100)
-#else
-  call usleep(100*1000)
-#endif
 
+  call sleep_msec(100)                  !### was 100
   go to 10
 
 end subroutine decode1

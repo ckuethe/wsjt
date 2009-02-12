@@ -1,64 +1,45 @@
-      subroutine ccf2(ss,nz,lag1,lag2,ccfbest,lagpk)
+      subroutine ccf2(ss,nz,nflip,ccfbest,lagpk)
 
+!      parameter (LAGMAX=20)
       parameter (LAGMAX=200)
       real ss(nz)
       real ccf(-LAGMAX:LAGMAX)
-      real pr(162)
-      logical first
+      integer npr(126)
 
-C  The WSPR pseudo-random sync pattern:
-      integer npr(162)
+C  The JT65 pseudo-random sync pattern:
       data npr/
-     +       1,1,0,0,0,0,0,0,1,0,0,0,1,1,1,0,0,0,1,0,
-     +       0,1,0,1,1,1,1,0,0,0,0,0,0,0,1,0,0,1,0,1,
-     +       0,0,0,0,0,0,1,0,1,1,0,0,1,1,0,1,0,0,0,1,
-     +       1,0,1,0,0,0,0,1,1,0,1,0,1,0,1,0,1,0,0,1,
-     +       0,0,1,0,1,1,0,0,0,1,1,0,1,0,1,0,0,0,1,0,
-     +       0,0,0,0,1,0,0,1,0,0,1,1,1,0,1,1,0,0,1,1,
-     +       0,1,0,0,0,1,1,1,0,0,0,0,0,1,0,1,0,0,1,1,
-     +       0,0,0,0,0,0,0,1,1,0,1,0,1,1,0,0,0,1,1,0,
-     +       0,0/
-      data first/.true./
+     + 1,0,0,1,1,0,0,0,1,1,1,1,1,1,0,1,0,1,0,0,
+     + 0,1,0,1,1,0,0,1,0,0,0,1,1,1,0,0,1,1,1,1,
+     + 0,1,1,0,1,1,1,1,0,0,0,1,1,0,1,0,1,0,1,1,
+     + 0,0,1,1,0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,1,
+     + 1,0,0,0,0,0,0,0,1,1,0,1,0,0,1,0,1,1,0,1,
+     + 0,1,0,1,0,0,1,1,0,0,1,0,0,1,0,0,0,0,1,1,
+     + 1,1,1,1,1,1/
       save
 
-      if(first) then
-         nsym=162
-         do i=1,nsym
-            pr(i)=2*npr(i)-1
-         enddo
-      endif
-
       ccfbest=0.
-
+      lag1=-LAGMAX
+      lag2=LAGMAX
       do lag=lag1,lag2
-         x=0.
-         do i=1,nsym
-            j=16*i + lag
-            if(j.ge.1 .and. j.le.nz) x=x+ss(j)*pr(i)
+         s0=0.
+         s1=0.
+         do i=1,126
+            j=2*(8*i + 43) + lag
+            if(j.ge.1 .and. j.le.nz-8) then
+               x=ss(j)+ss(j+8)
+               if(npr(i).eq.0) then
+                  s0=s0 + x
+               else
+                  s1=s1 + x
+               endif
+            endif
          enddo
-         ccf(lag)=x
-         if(x.gt.ccfbest) then
-            ccfbest=x
+         ccf(lag)=nflip*(s1-s0)
+         if(ccf(lag).gt.ccfbest) then
+            ccfbest=ccf(lag)
             lagpk=lag
          endif
       enddo
-
-      sum=0.
-      nsum=0
-      do i=lag1,lag2
-         if(abs(i-lagpk).gt.16) then
-            sum=sum+ccf(i)
-            nsum=nsum+1
-         endif
-      enddo
-      ave=sum/nsum
-
-      sq=0.
-      do i=lag1,lag2
-         if(abs(i-lagpk).gt.16) sq=sq + (ccf(i)-ave)**2
-      enddo
-      rms=sqrt(sq/(nsum-1))
-      ccfbest=(ccfbest-ave)/rms
 
       return
       end

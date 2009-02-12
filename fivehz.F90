@@ -22,7 +22,7 @@ subroutine fivehz
   real*8 fs,fsample,tt,u
   include 'gcom1.f90'
   include 'gcom2.f90'
-  data first/.true./,nc0/1/,nc1/1/,nsec0/-99/
+  data first/.true./,nc0/1/,nc1/1/
   save
 
   n1=time()
@@ -72,12 +72,8 @@ subroutine fivehz
   if(trperiod.le.0) trperiod=30
   tx1=0.0                              !Time to start a TX sequence
   tx2=trperiod-(tlatency+txdelay)      !Time to turn TX off
-  if(mode(1:4).eq.'JT65' .or. mode(1:3).eq.'JT2' .or.                   &
-       mode(1:3).eq.'JT4' .or. mode(1:4).eq.'JT64') then
+  if(mode(1:4).eq.'JT65') then
      if(nwave.lt.126*4096) nwave=126*4096
-     tx2=txdelay + nwave/11025.0
-     if(tx2.gt.(trperiod-2.0)) tx2=trperiod-tlatency-1.0
-  else if(mode(1:4).eq.'WSPR') then
      tx2=txdelay + nwave/11025.0
      if(tx2.gt.(trperiod-2.0)) tx2=trperiod-tlatency-1.0
   endif
@@ -152,37 +148,14 @@ subroutine fivehz
      sendingsh=0
   endif
 
-  nbufs=i1+i2+i3                             !Silence g95 warning
   nbufs=ibuf-ibuf0
   if(nbufs.lt.0) nbufs=nbufs+1024
   tdata=nbufs*2048.0/11025.0
-
-  if((mode(1:4).eq.'JT65' .or. mode(1:3).eq.'JT2' .or. mode(1:3).eq.'JT4' &
-       .or. mode(1:2).eq.'CW' .or. mode(1:4).eq.'WSPR' .or.               &
-       mode(1:4).eq.'JT64') .and. monitoring.eq.1 &
-       .and. tdata.gt.float(ntdecode) .and. ibuf0.ne.ibuf00) then
+  if(mode(1:4).eq.'JT65' .and. monitoring.eq.1 .and. tdata.gt.53.0    &
+       .and. ibuf0.ne.ibuf00) then
      rxdone=.true.
      ibuf00=ibuf0
   endif
-
-! Diagnostic timing information:
-!  t60=mod(tsec,60.d0)
-!  if(TxOK.ne.TxOKz) then
-!     if(TxOK.eq.1) write(*,1101) 'D2:',t
-!1101 format(a3,f8.1,i8)
-!     if(TxOK.eq.0) then
-!        tstop=tsec
-!        write(*,1101) 'D3:',t,nc0a
-!     endif
-!  endif
-!  if(iptt.ne.iptt0) then
-!     if(iptt.eq.1) then
-!        tstart=tsec
-!        write(*,1101) 'D1:',t,nc1a
-!     endif
-!     if(iptt.eq.0) write(*,1101) 'D4:',t
-!  endif
-
   iptt0=iptt
   TxOKz=TxOK
   ntr0=ntr

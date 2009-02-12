@@ -84,6 +84,7 @@ C  Find strongest line in each of the 4 phases, repeating for each drift rate.
                   if(sig.ge.sbest) then
                      sbest=sig
                      nbest=n
+                     fdotsh=drift
                   endif
                endif
             enddo
@@ -121,9 +122,7 @@ C  Find strongest line in each of the 4 phases, repeating for each drift rate.
             endif
          endif
          if(nstest.eq.0) nspecial=0
- 10   continue
-      enddo
-
+ 10   enddo
 
       if(nstest.eq.0) nspecialbest=0
       df4=4.0*df

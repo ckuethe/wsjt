@@ -1,27 +1,25 @@
-      subroutine extract(s3,nadd,ncount,decoded)
+      subroutine extract(s3,nadd,ncount,nhist,decoded,ltext)
 
       real s3(64,63)
       real tmp(4032)
       character decoded*22
       integer era(51),dat4(12),indx(64)
       integer mrsym(63),mr2sym(63),mrprob(63),mr2prob(63)
-      logical first
-      common/extcom/ntdecode
+      logical first,ltext
       data first/.true./,nsec1/0/
       save
 
       nfail=0
  1    call demod64a(s3,nadd,mrsym,mrprob,mr2sym,mr2prob,ntest,nlow)
-
       if(ntest.lt.50 .or. nlow.gt.20) then
          ncount=-999                         !Flag bad data
          go to 900
       endif
-
       call chkhist(mrsym,nhist,ipk)
+
       if(nhist.ge.20) then
          nfail=nfail+1
-         call pctile(s3,tmp,4032,50,base)     ! ### or, use ave from demod64a ?
+         call pctile(s3,tmp,4032,50,base)     ! ### or, use ave from demod64a
          do j=1,63
             s3(ipk,j)=base
          enddo
@@ -33,14 +31,9 @@
       call interleave63(mrprob,-1)
 
       ndec=1
-      nemax=30
+      nemax=30                              !Was 200 (30)
       maxe=8
-      xlambda=15.0
-      naddsynd=200
-      if(ntdecode.eq.48) then
-         xlambda=12.0
-         naddsynd=50
-      endif
+      xlambda=13.0                          !Was 12
 
       if(ndec.eq.1) then
          call graycode(mr2sym,63,-1)
@@ -48,7 +41,7 @@
          call interleave63(mr2prob,-1)
 
          nsec1=nsec1+1
-         write(22,rec=1) nsec1,xlambda,maxe,naddsynd,
+         write(22,rec=1) nsec1,xlambda,maxe,200,
      +        mrsym,mrprob,mr2sym,mr2prob
          call flushqqq(22)
          call runqqq('kvasd.exe','-q',iret)
@@ -62,8 +55,10 @@
          endif
          read(22,rec=2) nsec2,ncount,dat4
          decoded='                      '
+         ltext=.false.
          if(ncount.ge.0) then
             call unpackmsg(dat4,decoded) !Unpack the user message
+            if(iand(dat4(10),8).ne.0) ltext=.true.
          endif
       endif
  20   if(ndec.eq.0) then

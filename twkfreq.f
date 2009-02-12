@@ -1,30 +1,27 @@
-      subroutine twkfreq(ca,cb,jz,a)
+      subroutine twkfreq(c4aa,c4bb,n5,a)
 
-C  Apply AFC corrections to ca, returning corrected data in cb
-
-      complex ca(jz),cb(jz)
+      complex c4aa(n5)
+      complex c4bb(n5)
       real a(5)
-      real*8 twopi
-      complex*16 w
-      complex*16 wstep
-      data twopi/0.d0/
-      save twopi
+      complex w,wstep
+      data twopi/6.283185307/
 
-      if(twopi.eq.0.d0) twopi=8.d0*atan(1.d0)
-      w=1.d0
-      x0=0.5*(jz+1)
-      s=2.0/jz
-      do i=1,jz
+C  Apply AFC corrections to the c4aa and c4bb data
+      w=1.0
+      x0=0.5*(n5+1)
+      s=2.0/n5
+      do i=1,n5
          x=s*(i-x0)
-         if(mod(i,100).eq.1) then
+         if(mod(i,1000).eq.1) then
             p2=1.5*x*x - 0.5
 !            p3=2.5*(x**3) - 1.5*x
 !            p4=4.375*(x**4) - 3.75*(x**2) + 0.375
-            dphi=(a(1) + x*a(2) + p2*a(3)) * (twopi/375.0)
+            dphi=(a(1) + x*a(2) + p2*a(3)) * (twopi/1378.125)
             wstep=cmplx(cos(dphi),sin(dphi))
          endif
          w=w*wstep
-         cb(i)=w*ca(i)
+         c4aa(i)=w*c4aa(i)
+         c4bb(i)=w*c4bb(i)
       enddo
 
       return

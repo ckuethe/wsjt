@@ -14,7 +14,7 @@ C     mr2prob  probability that mr2sym was the transmitted value
       real*4 signal(64,63)
       real*8 fs(64)
       integer mrsym(63),mrprob(63),mr2sym(63),mr2prob(63)
-      common/tmp9/ mrs(63),mrs2(63)
+      common/mrscom/ mrs(63),mrs2(63)
 
       afac=1.1 * float(nadd)**0.64
       scale=255.999
@@ -32,7 +32,6 @@ C  Compute probabilities for most reliable symbol values
       do j=1,63
          s1=-1.e30
          fsum=0.
-         i1=0 !Shut up compiler warnings. -db
          do i=1,64
             x=min(afac*signal(i,j)/ave,50.d0)
             fs(i)=exp(x)
@@ -44,7 +43,6 @@ C  Compute probabilities for most reliable symbol values
          enddo
 
          s2=-1.e30
-         i2=0 !Shut up compiler warnings. -db
          do i=1,64
             if(i.ne.i1 .and. signal(i,j).gt.s2) then
                s2=signal(i,j)

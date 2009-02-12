@@ -7,7 +7,6 @@ subroutine runqqq(fname,cmnd,iret)
 
   character*(*) fname,cmnd
 
-  iret=ichar(fname(1:1)) + ichar(cmnd(1:1))    !Silence compiler warning
 #ifdef CVF
   iret=runqq(fname,cmnd)
 #else
@@ -16,26 +15,3 @@ subroutine runqqq(fname,cmnd,iret)
 
   return
 end subroutine runqqq
-
-subroutine flushqqq(lu)
-
-#ifdef CVF
-  use dfport
-#endif
-
-  call flush(lu)
-
-  return
-end subroutine flushqqq
-
-subroutine sleepqqq(n)
-#ifdef CVF
-  use dflib
-      call sleepqq(n)
-#else
-      call usleep(n*1000)
-#endif
-
-  return
-
-end subroutine sleepqqq
