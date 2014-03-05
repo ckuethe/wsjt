@@ -38,9 +38,9 @@ on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 #include <stdio.h>      /* defines printf for tests */
 #include <time.h>       /* defines time_t for timings in the test */
 #ifdef Win32
-#include "win_stdint.h"     /* defines uint32_t etc */
+#include "win_stdint.h"	/* defines uint32_t etc */
 #else
-#include <stdint.h>     /* defines uint32_t etc */
+#include <stdint.h>	/* defines uint32_t etc */
 #endif
 //#include <sys/param.h>  /* attempt to define endianness */
 //#ifdef linux
@@ -191,10 +191,9 @@ uint32_t nhash_( const void *key, int *length0, uint32_t *initval0)
   u.ptr = key;
   if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0)) {
     const uint32_t *k = (const uint32_t *)key;         /* read 32-bit chunks */
-#ifdef VALGRIND
     const uint8_t  *k8;
-#endif
 
+    k8=0;                                     //Silence compiler warning
     /*------ all but last block: aligned reads and affect 32 bits of (a,b,c) */
     while (length > 12)
     {

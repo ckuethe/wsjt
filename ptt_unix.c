@@ -28,13 +28,11 @@
 #if STDC_HEADERS
 # include <stdlib.h>
 # include <stddef.h>
-
 #else
 # if HAVE_STDLIB_H
 #  include <stdlib.h>
 # endif
 #endif
-
 #if HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -92,7 +90,7 @@ int fd=-1;		/* Used for both serial and parallel */
 #define STATE_PORT_OPEN_SERIAL		2
 
 int
-ptt_(int *unused, char *ptt_port, int *ntx, int *ndtr, int *iptt)
+ptt_(int *unused, char *ptt_port, int *ntx, int *iptt)
 {
   static int state=0;
   char *p;

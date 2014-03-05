@@ -3,21 +3,20 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl AC_PREREQ(2.61)
 
-dnl Sneaky way to get an Id tag into the configure script
+dnl This should be a svn hook instead.
+dnl Sneakier way to get a Version into setup.py
 AC_COPYRIGHT([$Id$])
 
-AC_INIT([wsjt],[7.04])
-
+AC_INIT([wspr],[1.11])
 fail=0
 
-AC_PREFIX_DEFAULT("/usr/local")
+AC_PREFIX_DEFAULT(/usr/local/)
 
 OLD_CFLAGS="$CFLAGS"
 dnl Checks for programs.
 AC_PROG_CC
 AC_LANG(C)
 AC_PROG_F77
-
 dnl Make sure autoconf doesn't interfere with cflags -jmallett
 CFLAGS="$OLD_CFLAGS"
 
@@ -29,7 +28,6 @@ FFLAGS_GFORTRAN="${FFLAGS} -fno-range-check -ffixed-line-length-none\
 			-Wall -fbounds-check -fno-second-underscore -fPIC"
 FFLAGS_G95="${FFLAGS} -Wall -Wno-precision-loss -fbounds-check -fno-second-underscore -fPIC"
 #-Wall -Wno-precision-loss -fbounds-check -fno-second-underscore -fPIC
-
 
 AX_CHECK_GFORTRAN
 AX_CHECK_PORTAUDIO
@@ -91,7 +89,6 @@ sys/resource.h linux/ppdev.h dev/ppbus/ppi.h sys/stat.h fcntl.h sys/ioctl.h ])
 
 AC_HEADER_TIME
 
-AC_CHECK_HEADER([fftw3.h], [HAS_FFTW3_H=1], [HAS_FFTW3_H=0])
 AC_CHECK_HEADER([samplerate.h], [HAS_SAMPLERATE_H=1], [HAS_SAMPLERATE_H=0])
 
 dnl See whether we can include both string.h and strings.h.
@@ -108,10 +105,6 @@ gcc_cv_header_string,
 if test "$gcc_cv_header_string" = "yes"; then
 	AC_DEFINE(STRING_WITH_STRINGS, 1, [Define to 1 if string.h may be included along with strings.h])
 fi
-
-dnl check for a fortran shim entry point
-AC_CHECK_LIB(fftw3f, sfftw_destroy_plan_, \
-	[HAS_FFTW3FLIBS=1], [HAS_FFTW3FLIBS=0])
 
 
 dnl Check for stdarg.h - if we can't find it, halt configure
@@ -143,30 +136,41 @@ else
 dnl Don't get bitten by Cygwin's stupidity if the user specified
 dnl a custom prefix with a trailing slash
 
-	prefix=`echo ${ac_default_prefix} | sed 's/\/$//'`
+	prefix=`echo $prefix | sed 's/\/$//'`
+	AC_DEFINE_UNQUOTED(PREFIX, "$prefix", [Prefix where wsjt is installed.])
+	
 fi
 
+dnl now set conf.h,, CPPFLAGS and CFLAGS flags as needed
+dnl ====================================================
 
 dnl sanity tests.
-dnl =============
+dnl
+echo
 
 if test -z $FC ; then
 	fail=1
 	echo "You need g95 or gfortran to compile this program!"
 fi
 
-if test $HAS_FFTW3_H -eq 0; then
-	fail=1
-	echo "You need to install the fftw3 libraries"
+if test "$F2PY" = ""; then
+	AC_SUBST(F2PY, "python f2py.py")
 fi
 
-if test $HAS_SAMPLERATE_H -eq 0; then
-	fail=1
-	echo "You need to install the samplerate library"
-else
-	AC_DEFINE(HAS_SAMPLERATE_H, 1, )
-	LIBS="${LIBS} -lsamplerate"
-fi
+dnl 
+AC_SUBST(PREFIX, "${prefix}")
+AC_SUBST(CPPFLAGS, "${CPPFLAGS}")
+AC_SUBST(LDFLAGS, "${LDFLAGS}")
+AC_SUBST(LIBS, "${LIBS}")
+AC_SUBST(CFLAGS)
+AC_SUBST(FFLAGS)
+AC_CONFIG_FILES(Makefile)
+AC_OUTPUT
+
+dnl do summary
+
+echo
+echo
 
 if test $HAS_PORTAUDIO -eq 1; then
 	AC_DEFINE(HAS_PORTAUDIO, 1, )
@@ -179,26 +183,6 @@ else
 	echo " --with-portaudio-lib-dir= to set the paths."
 fi
 
-if test $HAS_FFTW3_H -eq 1; then
-	AC_DEFINE(HAS_FFTW3_H, 1, )
-else
-	fail=1
-	echo "You are missing the fftw3.h include file"
-fi
-
-if test $HAS_FFTW3FLIBS -eq 1; then
-	LIBS="${LIBS} -lfftw3f"
-	AC_DEFINE(HAS_FFTW3FLIBS, 1, )
-else
-	fail=1
-	echo "You are missing the fortran shim libs in libfftw3."
-fi
-
-if test "$F2PY" = ""; then
-	echo "You are missing f2py, trying local copy."
-	F2PY="python f2py.py";	
-fi
-
 dnl
 dnl If fail a pre-requisite then fail
 dnl
@@ -206,31 +190,18 @@ if test $fail -eq 1; then
 	AC_MSG_ERROR([Please check error messages and install missing packages.])
 fi
 
-dnl 
-AC_SUBST(PREFIX, "${prefix}")
-AC_SUBST(CPPFLAGS, "${CPPFLAGS}")
-AC_SUBST(LDFLAGS, "${LDFLAGS}")
-AC_SUBST(LIBS, "${LIBS}")
-AC_SUBST(CFLAGS)
-AC_SUBST(FFLAGS)
-AC_SUBST(F2PY, "${F2PY}")
-AC_CONFIG_FILES(Makefile)
-AC_OUTPUT
-
-dnl do summary
-echo
-echo "***************"
-
-
 if test $g95 = "yes"; then
 	echo "Using g95 as fortran compiler.";
-elif test $gfortran = "yes"; then
+fi
+
+if test $gfortran = "yes"; then
 	echo "Using gfortran as fortran compiler.";
 fi
 
 echo
 
-echo "Compiling $PACKAGE_NAME $version"
+echo
+echo "Compiling $PACKAGE_NAME $PACKAGE_VERSION"
 echo
 
 echo "Installing into: $prefix"
