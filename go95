@@ -1,4 +1,0 @@
-./configure --enable-g95
-make clean
-make
-
