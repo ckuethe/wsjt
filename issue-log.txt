@@ -1,0 +1,775 @@
+wsjtx-1.4.0-rc1
+===============
+Release candidate abandoned due to packaging issues on Linux.
+
+wsjtx-1.4.0-rc2
+===============
+
+Mac installer - g4wjs, Bob n7rjn - Cannot expand archive in RO DMG.
+
+    g4wjs: Move tarball to Desktop or somewhere else before expanding.
+
+    g4wjs: Fixed in CMake generated Drag & Drop installer. Closed.
+
+Hamlib TS-2000 - k1jt - WSJT-X "Mode" != "None" glitches when Tx QRG changes
+
+    g4wjs: Trying  to read  "other" VFO mode  requires FRn  command to
+    	   other" VFO which is source of glitch when split.
+
+    g4wjs:  Current best  workaround is  to  set "Mode"  to "None"  in
+    	    Settings which stops WSJT-X trying to manipulate rig mode.
+
+    g4wjs: Won't fix - Closed.
+
+Hamlib FT-847 - Eddy g6uqi - fails to start
+Hamlib FT-847 - Mark w7mem - fails to start
+
+    g4wjs: Sent version with CAT trace - waiting log file.
+
+    g4wjs: HamlibTranceiver::init_rig() not coping with no get VFO and
+    	   no toggle VFO CAT command available, changed to just assume
+    	   A/MAIN is always the Rx VFO on such rigs.
+
+    g4wjs: Sent g6uqi a test version of RC3 with a fix for this.
+
+    g4wjs: g6uqi  reposts that this  hot fix (r4449) has  resolved the
+    	   issue.
+
+    g4wjs: Fixed wsjtx-1.4 (r4449) - Closed.
+
+Commander TS-2000 - Jim wb6dkh - SPLIT disappearing
+Commander TS-2000 - David wd4kpd - possibly the same issue
+
+    g4wjs: VOX keying might be the factor.
+
+    g4wjs: Sent logs to Dave aa6yq for comment.
+
+    g4wjs:  Further investigation  now  points to  the auto-atu  which
+    	   swaps  VFO and  mode while  tuning, this  may be  confusing
+    	   Commander.
+
+    g4wjs:  Dave aa6yq  confirms  that WinWarbler  will interact  with
+    	   Commander and  cause this  issue when the  TS-2000 auto-ATU
+    	   switches to CW  during the tuning sequence.  Passed info on
+    	   to wb6dkh & wd4kpd.
+
+    g4wjs: Not fixed for wd4kpd as he doesn't use WW. Sent tracing RC2
+    	   awaiting log and match Commander ErrorLog.txt.
+
+    g4wjs: Logs  received from wd4kpd.   Unexpected drop out  of split
+    	   reported by Commander when  setting Tx frequency. Forwarded
+    	   to aa6yq for analysis.
+
+    g4wjs: Dave aa6yq  reports that setting Tx  frequency clears split
+    	   on this rig (I guess many others too that use Kenwood style
+    	   CAT  commands). He  suggests  setting  Tx frequency  before
+    	   setting split. This is slightly problematic because setting
+    	   split has  side effect  of setting  mode on  Tx VFO  and on
+    	   Yaesu and Elecraft changing from CW to another mode applies
+    	   a small frequency  offset :( We may have to  accept this as
+    	   it will be rare and there is no explicit way of setting the
+    	   mode of the  Tx VFO in the Commander  interface.  The other
+    	   workaround  of  doing   everything  twice  (TxFreq,  Split,
+    	   TxFreq, Split) will glitch the Rx or Tx twice as much.
+
+    g4wjs: Seems  that split  needs to  be set  both before  and after
+    	   every change of Tx frequency.   Before to satisfy rigs like
+    	   the Icom IC-756 and after  to satisfy rigs like the Kenwood
+    	   TS-2000.
+
+    g4wjs: Sent out a test version to wb6dkh, wd4kpd and aa6yq.
+
+    g4wjs: Testing reports are positive. Will release changes when the
+           required Commander v11.0.0 is publicly released.
+
+Commander TS-2000 - Jim wb6dkh - Fake split
+Hamlib IC-735 - Dieter dk6ov - Fake split not returning to correct QRG
+
+    g4wjs: Leaving wrong QRG (Tx) current.  Need trace for this issue.
+
+    g4wjs: dk6ov reports  QRG not returning to Rx when  leaving Tx for
+    	   both "Tune"  and normal Tx  periods. Also "Band"  combo box
+    	   not being enabled after "Tune".
+
+    g4wjs: Fixed in r4572 - confirmed as working by dk6ov - Closed.
+
+Flex 6000 (TS-2000 emulation) - George kf2t - fails to read QRG
+Flex 6700 - Ed k0kc - No CAT no PTT
+
+    g4wjs: Flex doesn't have FB; command.
+
+    g4wjs: Sent kf2t test version that  doesn't query TX QRG if not in
+    	   split.
+
+    g4wjs: Sent RC3 preview with a hotfix (r4434) to kf2t & k0kc.
+
+    g4wjs: Caveats with SmartSDR & FlexRadio SDRs:-
+
+           * Data mode  cannot be  set from WSJT-X,  USB should  be OK
+             otherwise use "None" and set mode manually.
+
+           * Split operation  is not possible,  this should not  be an
+             issue  given that  wide  band Tx  is  available on  these
+             radios.
+
+    g4wjs: Initial reports from kf2t indicate a successful fix.
+
+    g4wjs: Reported as working as expected by kf2t.
+
+    g4wjs: Fixed r4434 - Closed.
+
+Hamlib FlexRadio (DTTSP UDP & IPC interfaces) - - Need to diagnose and check if these work
+
+    g4wjs: Hamlib has a FlexRadio back  end that talks UDP on 19001 or
+    	   /dev/shm/SDRcommands .
+
+Windows (Finestra WM) - Josh kk1d - Application not staying inside virtual desktop
+
+Hamlib TS-570D - Peter Pauly w0vll - Protocol error while getting TX frequency
+Hamlib? TS-570 - ??? n4au - Polling causing errors
+Hamlib TS-570D - Swa on5swa - Various rig control errors
+
+    g4wjs: Split not required so r4434 may have resolved this anyway.
+
+    g4wjs: Sent trace version of RC2 to Peter.
+
+    g4wjs: Log  shows many corrupt  and truncated CAT  responses.  The
+    	   TS-570(D) is known to have  fragile CAT handling. I need to
+    	   look  at hamlib  to investigate  remedies at  the character
+    	   exchange level.
+
+Hamlib FT-450 - Rudy ve3bdr - Protocol error while getting mode of split VFO
+
+    g4wjs: May be fixed by r4434.  I have asked Rudy to try again with
+    	   Mode" set to "None".
+
+    g4wjs: Not fixed. Sent trace version of RC2.
+
+    g4wjs: Log shows  hamlib is not handling error  responses from the
+           rig correctly.  I have enhanced hamlib to handle "rig busy"
+           responses  by retrying  the command  a few  times. Built  a
+           patched  version and  sent  tracing variant  to ve3bdr  for
+           testing.
+
+    g4wjs: Sent upstream patch to hamlib  team for turning off AI mode
+           and retry mechanism for rig busy responses.
+
+    g4wjs: Hamlib  backend for  this rig  (shared by  FT-9000, FT-950,
+           FT-5000  and, FT-2000)  needs  enhancement,  it is  missing
+           proper     split     mode,    frequency     and,     enable
+           functions. Implementing.
+
+LXDE desktop Ubuntu - Craig wb3gck - No application menu bar
+
+    g4wjs: Suggested installing or un-installing appmenu-qt5 package.
+
+    g4wjs: Un-installing appmenu-qt5 resolved this issue.
+
+    g4wjs: Closed.
+
+Hamlib IC-7100 - Erik on4pb - CAT PTT method not available on IC-7100
+
+    g4wjs: This has been identified as a HamlibTranceiver registration
+    	   defect.  PTT type categories incorrectly registered.
+
+    g4wjs: Sent hot fix version of RC3 to on4pb for testing.
+
+    g4wjs:  Further   problem  reported   with  poll  of   PTT  status
+    	   failing. This appears  to be a hamlib defect  with ptt type
+    	   being RIG_PTT_SERIAL_CAT instead of RIG_PTT_RIG.  Asked for
+    	   clarification on hamlib-devel ML.
+
+    g4wjs: Sent upstream  patch to hamlib team to  resolve issues with
+           PTT type registration. Patch accepted and applied.
+
+    g4wjs: Sent version built with revised hamlib for testing.
+
+    g4wjs:   on4pb  reports   this   version   works  correctly   with
+           hamlib/ic-7100,       HRDv5/IC-7100,       OmniRig/IC-7100,
+           hamlib/TX-850S and, hamlib/HPSDR(TS-2000).
+
+    g4wjs: Fixed in hamlib - Closed.
+
+Hamlib IC-746 - Doc kb3mow - Wrong Tx QRG used after dbl-click on decode
+
+    g4wjs: Asked for more details of exact Rx/Tx dial QRGs.
+
+    g4wjs: Explanation appears  to show Tx QRG out by  500Hz.  I can't
+    	   see any  obvious way this  can happen. kb3mow  has reported
+    	   that he can no longer reproduce this issue.
+
+    g4wjs: On Hold.
+
+Hamlib ANAN-100D (PowerSDR mRX PS v3.2.19) - Ton pa0tbr - split mode not working
+Hamlib ANAN-100D (Openhpsdr mRX) - Bob wd6dod - CAT control not working
+Hamlib hermes (PowerSDR mRX) - Serge r6yy - Cat & PTT not working
+
+    g4wjs: Not urgent  as split mode not required due  to wide band Tx
+    	   available.
+
+    g4wjs: Sent hot fix version of v1.4 with mods for SmartSDR TS-2000
+    	   emulation.
+
+    g4wjs:  pa0tbr &  r6yy  report successful  operation with  patched
+    	   version.
+
+    g4wjs: Fixed (mostly) r4434.
+
+OmniRig  TS-590S  -  Randy  k5rhd -  OmniRig  server  going offline error
+OmniRig Omni VII  - Bert  w0rsb - OmniRig  server going offline error
+
+    g4wjs: Issues  with clearing the  error.  Probably the  "Test CAT"
+    	   not always able to start OmniRig client cleanly issue.
+
+    g4wjs: Sent a tracing version of RC2.
+
+    g4wjs:   Fixed  issues   with   OmniRig   reporting  rig   offline
+           intermittently and  lack of  split mode working.  Sent test
+           version.
+
+OmniRig TS-2000 - Yanis sv2bbo - Initialization timeout
+
+    g4wjs: Is using VPSE as  serial splitter to cooperate with Kenwood
+    	   ARCP rig control program, have  explained this is a invalid
+    	   configuration and will not be supported.
+
+    g4wjs: Also  using OmniRig as that  is used with UR5EQF_Log  3 for
+    	   rig interface. Have explained that  there is a known defect
+    	   that causes  "Test CAT" to  fail.  Suggested he  just click
+    	   "OK" to exit  Settings. Also sent trace  version - awaiting
+    	   log.
+
+    g4wjs:   Fixed  issues   with   OmniRig   reporting  rig   offline
+           intermittently and  lack of  split mode working.  Sent test
+           version.
+
+Hamlib R8500 - Chris (UK SWL) airguzzler@btinternet.com - Hamlib IO error
+
+    g4wjs: Probably port mis-configuration. Awaiting update.
+
+CW synthesiser - Jim n4st - Distorted CW Id
+
+    g4wjs: Sounds horrible, something is broken in the envelope shaper.
+
+Commander KX3 - Neil kb3tvu - occasionally stuck in TX after normal TX period
+
+    g4wjs: Advised  to build a CAT  trace executable and send  log for
+    	   analysis - awaiting log.
+
+    g4wjs:  Log is  normal  with  PTT on/off  commands  being sent  to
+    	   Commander at  the correct times. Asked  kb3tvu to reproduce
+    	   again with Commander tracing on also - awaiting logs.
+
+    g4wjs: kb3tvu  reports that this  issue in no  longer reproducible
+           after a shack rearrangement.
+
+    g4wjs: Closed.
+
+Log files - Wayne m0way - Would like links on desktop to log files
+
+    g4wjs: This is probably a good idea, I'm not sure that the desktop
+    	   is  the best  place for  them but  there must  be somewhere
+    	   sensible  and more  visible  to put  such  links.  Need  to
+    	   investigate CPack NSIS generator to find the best way to do
+    	   this.
+
+    g4wjs: A similar feature on Linux/Mac should be possible.
+
+    g4wjs: Proposed for v1.5.
+
+Waterfall - Jean f8rz - Requesting different labelling
+
+    g4wjs: Would like  frequency ticks to be at  absolute multiples of
+    	   500Hz   even   when  start   frequency   is   not  such   a
+    	   multiple. E.g.  for start 200Hz  ticks (and labels) at 200,
+    	   500, 1000, 1500, ...
+
+    g4wjs: Proposed for v1.5.
+
+    	   Implemented by Joe in r4464.  (Others please test!)
+
+Decoding - Jean f8rz - Abandoned Tx should not disable decoding for a period
+
+    g4wjs: This is an outstanding issue in at least v1.3 also.
+
+    g4wjs: Needs changes  to Detector class to allow  audio buffers to
+    	   be  not cleared  by transmitting.   Complications arise  in
+    	   that any data  from prior receive periods  must be cleared.
+    	   Might  be as  simple  as clearing  the  audio buffer  after
+    	   decoding but may be complicated when decoding overlaps next
+    	   period.  Double  buffering may be an  option.  Question: is
+    	   the audio buffer needed after the last symspec call?
+
+	 K1JT: I agree that this has been a desirable change.  Perhaps 
+	 can zero only a small part of the buffer -- samples taken 
+	 while Tx was on?
+
+Decoded text - Albert kc8kjf - Report or grid last character truncated
+
+    g4wjs: This  occurs with larger  fonts sizes on long  decoded text
+    	   lines e.g.   two 6 character  callsigns and a R+  report or
+    	   locator.  There  is a  defect somewhere in  the DisplayText
+    	   class with font  metric calculations.  I'm not  sure why we
+    	   even  try to  truncate the  message text  given that  it is
+    	   rendered in a <pre/> element and therefore doesn't wrap.
+
+    g4wjs:  This can  be resolved  by choosing  a small  font size  or
+    	   increasing the main window width a little.
+
+    g4wjs: Proposed for v1.5.
+
+	K1JT: on the system I tested, it was OK after making the main
+	window a bit wider.  It has something to do with having 
+	selected "Show DXCC entity and worked before status" when the
+	main window was not (then) large enough?
+
+HRD FTdx3000 - Jean-Michel f6eao/p - Not working
+
+    g4wjs: This  as yet untested rig  with WSJT-X + HRD  clearly needs
+    	   some adjustment to the initialization in the HRDTransceiver
+    	   class.
+
+    g4wjs:  Requested the  "HRD  Interface  Information.txt" file  for
+    	   analysis.
+
+    g4wjs:  Added required  regular expressions  for the  FTdx3000 and
+           reworked HRD interface to make more reliable and robust.
+
+    g4wjs: One outstanding  issue, the mode of the  "other" VFO cannot
+           be reliably set  via HRD so FTdx3000 users  must set "Mode"
+           to "None" in WSJT-X.
+
+    g4wjs: Fixed r4523 - Closed.
+
+Multi-instance support - Bill g4wjs - Lock mechanism needed to avoid duplicates
+
+    g4wjs: There  is no  check that multiple  instances are  being run
+    	   with the same rig-name.  Some  mechanism to control this is
+    	   desirable.  A  simple mechanism  that isn't prone  to false
+    	   positives (i.e.  not relying on lock files being deleted on
+    	   exit) needs to be developed.
+
+    g4wjs: Implemented in v1.5. - Closed.
+
+Hamlib Omni VII - Bert w0rsb - Reports incomplete support
+
+Worked B4 - Dan k4shq - Incorrect country name occasionally
+
+    g4wjs: Also happened in v1.3.
+
+    g4wjs: Asked for example.
+
+CAT retries - George kf2t - Requests that 1 or 2 retries be made automatically
+
+    g4wjs: Requirement comes from using a FlexRadio 6700 which briefly
+    	   interrupts   the   CAT   connection   when   changing   rig
+    	   profiles. Suggests  a couple of automatic  retries would be
+    	   helpful.
+
+Hamlib K3 - Bob n7rjn - Comms timeout error every 10-15 mins
+
+    g4wjs: Sent CAT trace version - awaiting log.
+
+    g4wjs: Log shows incomplete responses to CAT commands from the K3.
+    	   Stop bits was set to 2,  K3 is 1 stop bit. Suggested trying
+    	   with  1 stop  bit and  if that  fails a  lower baud  rate -
+    	   awaiting log.
+
+    g4wjs: Log  with 1 stop  bit is much  better but still  losing CAT
+    	   around 50s. May be CPU  load related issue but is happening
+    	   in both Tx and Rx periods which is hard to explain.
+
+    g4wjs: n7rjn  is using Mac  OS X  10.9 Mavericks and  the Timewave
+    	   Navigator  he  uses  for  interfacing  has  a  custom  FTDI
+    	   USB-serial driver  on Mac.  This only  has instructions for
+    	   10.7 & 10.8 so it may  not be compliant with 10.9. Informed
+    	   n7rjn.
+
+    g4wjs: Awaiting results of tests at lower CAT serial baud rate.
+
+    g4wjs: This  is looking  like an  issue with  the Elecraft  P3 not
+    	   passing thru  all CAT traffic correctly.   n7rjn has tested
+    	   for 1hr without P3 in  line without error. Awaiting results
+    	   with P3 upgraded to latest firmware.
+
+    g4wjs: n7rjn  updates Elecraft P3  firmware from 1.26 to  1.29 and
+    	   the  issue appears  to be  greatly improved  but successive
+    	   "IF;" CAT commands sometime still  cause the second to only
+    	   respond ";" and retries return  nothing. So it seems the P3
+    	   (or possibly the K3) still have an issue with CAT.
+
+    g4wjs: n7rjn testing again without P3.
+
+    g4wjs:  Tests passed  which seems  to confirm  that the  latest P3
+    	    firmware still has a CAT  pass through issue. Bob will log
+    	    a case with Elecraft.
+
+    g4wjs: Closed.
+
+    g4wjs: P.S. differently from first thougth, the P3 can be set to a
+    	   lower baud  rate than the  K3 <->P3 fixed 38.4k  baud. This
+    	   will  probably eliminate  the issue.   n7rjn is  testing at
+    	   19.2k baud.
+
+Commander - Mike k2oi - Not connecting hostname lookup error
+
+    g4wjs:  This may  be due  to the  "Network Server"  setting having
+    	   spaces in it  which causes the hostname  lookup to override
+    	   the default hostname.
+
+    g4wjs: Changed to trim network query name (r4468).
+
+Commander K3 - Joe w4tv - K3 not going to split
+
+    g4wjs: This appears to be because  the K3 will not switch to split
+           unless the mode  of VFO B has been preset  to match that of
+           VFO A.
+
+    g4wjs:  Joe has  also  offered  to help  with  testing WSJT-X  CAT
+    	   issues.
+
+    g4wjs: Dave aa6yq is copied on discussions with Joe.
+
+Commander IC7200 - John wa2hip - Occasionally not setting up split correctly
+
+    g4wjs: I'm  not sure exactly  what is  not set correctly  and have
+    	   asked ws2hip to clarify.
+
+	  From wa2hip:
+	  ****************
+	  Here is a general example. This is with running CAT via Commander
+
+	  VFO-A 14076
+	  VFO-B 14076.5
+
+	  Enable TX
+	  Rig goes into TX switching to VFO-B
+	  VFO-B immediately switches to 14076 while in TX (no I do not have the "change when in TX" box checked)
+
+	  Now I am TX on incorrect freq so I HALT TX
+
+	  This happens a fair share of the time.
+
+	  IT DOES NOT happen with Direct Control (NO Commander)
+	  ****************
+
+
+Hamlib IC7200 - John wa2hip - Occasional incorrect rig setting
+
+    g4wjs:  Asked  for clarification  and  sent  a CAT  trace  version
+    	   instructions to reproduce one issue for analysis - awaiting
+    	   log.
+
+Log directory - several - Difficulty locating log files
+
+    g4wjs: A  new menu item  to open the  log directory in  a suitable
+    	   system application would seem to satisfy these issues.
+
+    g4wjs: Due to  the number of queries/requests  around locating the
+    	   log files, this  has been added to the wsjtx-1.4.   It is a
+    	   new  feature   rather  than  a   bug  fix  but   since  the
+    	   implementation  is  fairly  trivial and  easily  tested  it
+    	   shouldn't cause regressions.
+
+    g4wjs: Completed r4470 - Closed.
+
+Worked B4 - Peter oz1pif - Request option to use wsjtx.log as source
+
+    g4wjs: He  deletes the ADIF  log after importing into  his logging
+    	   application so the  ADIF log is not suitable  for worked B4
+    	   checking. OTOH the wsjtx.log is  left untouched as a backup
+    	   and would make a better database of worked calls.
+
+    g4wjs: IMHO the worked B4 would  benefit from using a database for
+    	   record storage  rather than using  a raw ADIF  format file.
+    	   Whether   this  effort   is   justified   along  with   the
+    	   installation  complexities  of  using a  portable  database
+    	   application is hard  to judge.  Given that  JTAlert-X is so
+    	   competent  at doing  this job  and more  on Windows;  maybe
+    	   Laurie vk3ama might be persuaded to port his application to
+    	   Linux and Mac  with bridges to logging  suites available on
+    	   those platforms.
+
+Settings dialog - Bob wd6dod - Widgets on Radio tab missing
+
+    g4wjs: looks  like the default  and minimum sizes for  this window
+    	   are too small and on some systems the layout doesn't render
+    	   everything until the window is made larger.
+
+    g4wjs: Fixed in r4481. Closed.
+
+Hamlib IC-7800 - Dave g3red - Fails to initialize
+
+    g4wjs: Sent tracing version of RC2 - awaiting log.
+
+Virus detected - Bob kf5tpq - Vipre scanner detects trojan
+
+    g4wjs:  This is  a  false  positive, but  for  releases we  should
+    	   validate with  a few of  the on line  anti-virus validators
+    	   and  publish  the  results  and  signatures  alongside  the
+    	   releases.
+
+    g4wjs: Asked  kf5tpq if  he went ahead  and installed  and offered
+    	   more help if he is still unsure.
+
+    g4wjs: Todo release process.
+
+HRD FlexRadio-3000 (PowerSDR) - Johan on3vna - Illegal mode in init
+
+    g4wjs: Asked for HRD info file.
+
+    g4wjs: Using PowerSDR  HRD rig interface. Has  removed buttons and
+           sliders from HRD  UI to improve performance,  need to check
+           if that limits TCP/IP server controls available.
+
+    g4wjs: Removing  controls from HRD  UI also removes them  from the
+           TCP/IP server. This is a PITA  since any user can break the
+           interface by  customizing their HRD  UI and that  is common
+           because removing  sliders and buttons  improves performance
+           :(
+
+    g4wjs:   Asked   on3vna  if   he   can   provide  "HRD   Interface
+           Information.txt" for an un-customized HRD. He states he has
+           another  machine which  he  will  try and  do  that from  -
+           awaiting data.
+
+Log file - Albert kc8kjf - Callsign recorded as RRR
+
+    g4wjs: Asked for ALL.txt to see which exchange caused this.
+
+    iw3rab:  Reports  this  is  due  to "MYCALL  RRR  73"  style  free
+    	     messages.
+
+Hamlib TS-990S - Charlie g4est - No direct support
+
+    g4wjs: Needs new hamlib backend.
+
+    g4wjs:  Mark  g0mgx  reports  that selecting  TS-2000  works  well
+            including split mode.
+
+Hamlib FTdx1200 - Marc w4mps - No direct support
+
+    g4wjs: Needs new hamlib backend.
+
+Hamlib FTdx3000 - - No direct support
+
+    g4wjs: Needs new hamlib backend.
+
+Hamlib IC-817 - David wa1oui - Occasional hamlib errors
+
+   g4wjs:  Using   OX  X   10.9  with  Timewave   Navigator.   Getting
+          intermittent  "Hamlib error:  Command  rejected  by the  rig
+          while setting current VFO".  Sent tracing version.
+
+    g4wjs: Log shows rig doesn't respond to a CAT command at second 35
+           a normal transmit period. Suggest investigating RFI issues.
+
+    g4wjs: Suggested changes to Settings:-  no flow control, no forced
+           DTR or RTS,  1 stop-bit and, use cu device  rather than tty
+           device. After changes all seems to be working OK.
+
+    g4wjs: Closed - user error.
+
+ - Bjarne oz6dr - Operation below 200Hz
+
+    g4wjs: This should probably be allowed when split mode is enabled. 
+
+Hamlib FT-857D - Andrew zl3cc - Not setting Tx QRG for 1.5 - 2kHz segment
+
+    g4wjs: Sent trace version.
+
+    g4wjs: Log  shows that when starting  from MTUNE rather than  on a
+           VFO is not handled correctly.  zl3cc reports that the issue
+           doesn't arise when starting with a VFO rather than a memory
+           on the rig.
+
+    g4wjs: This is only an issue if the user swaps VFO to check the Tx
+           QRG.  Application works as designed if VFOs are not swapped
+           manually during a  session. This is a quirk of  the rig and
+           there is no obvious workaround other than not changing VFOs
+           manually.
+
+    g4wjs: Closed - won't/can't fix.
+
+Halib TT Orion - Peter oz1pif - Split mismatch error
+
+    g4wjs: Asked for CAT trace log.
+
+    g4wjs: Issue  is hamlib defect  not detecting split  correctly nor
+           setting split correctly either. Submitted patch to hamlib.
+
+    g4wjs: Fixed, hamlib patch accepted and applied - Closed.
+
+Hamlib IC-7410 - Mike k6msm - "Hamlib error: Command rejected by the rig while setting current VFO"
+
+    g4wjs: Sent tracing version - awaiting log.
+
+    g4wjs: Hamlib back end for IC-7410 is broken. Fixed first detected
+           defect and sent new version of WSJT-X along with test plan.
+
+    g4wjs: Finalized  hamlib changes  and submitted patch  upstream to
+           hamlib team. Sent patched version to k6msm for testing.
+
+    g4wjs: Fixed, patch to hamlib accepted and applied - Closed.
+
+Commander - Phil f4bkt - Invalid frequencies above VLF in French locale
+
+    g4wjs: Commander is reporting  frequencies via TCP/IP with invalid
+           UTF-8   characters    when   the   character    should   be
+           multi-byte. E.g. the non-break space U+00A0 that is used as
+           a number group separator in the French locale.
+
+    g4wjs: Reported  issue to  Dave AA6YQ  but he  has been  unable to
+           persuade Commander to send valid UTF-8 strings. Reverted to
+           using      the      undocumented      Commander      server
+           commands"CmdGetFreq" and "CmdGetTxFreq" which always return
+           numbers with '.' as a DP and ',' as a group separator.
+
+    g4wjs: Dave AA6YQ  will continue to look for a  proper solution so
+           this fix should be temporary.
+
+    g4wjs: Hotfix  r4518 built and  sent to  f4bkt and Phil  kb9ro who
+    	   reported similar issues.
+
+HRD TT Omni VII - Mike w9mdb - Mode setting not working
+
+    g4wjs: Trace shows HRD buttons for mode not recognized
+
+    g4wjs: Fixed r4526 - Closed.
+
+HRD FT-450D - Bill nzzal - Invalid mode error
+
+    g4wjs: Requested "HRD Interface Information.txt".
+
+    g4wjs:  Added  support for  FT-450(D)  modes  via HRD.  Sent  test
+           version to n7zal. Confirmed as working by n7zal.
+
+    g4wjs: Fixed r4529 - Closed.
+
+Hamlib IC-7410 - Mike k6msm - Changing filter on rig causes error
+
+    g4wjs: This is due to "CI-V  Transceive" mode being on on the rig.
+           Hamlib  cannot  cope  with   unsolicited  CI-V  bus  status
+           reports. Suggested  k6msm turns off "CI-V  Transceive" mode
+           in the rig menu.
+
+    g4wjs: Closed - User setup issue.
+
+HRD FTdx3000 - Jean-Michel f6eao/p - Band change sets wrong aerial and power
+
+    g4wjs: This may be a generic  Yaesu issue. Yaesu radios recall the
+           last selected aerial (and power  setting on some rigs) when
+           switching  bands  with the  band  buttons  or band  up/down
+           selector. Just  sending a QSY  frequency via a  CAT command
+           does  not do  the  same  thing, it  just  changes the  dial
+           frequency. We may  have to use any  available band selector
+           CAT  command  before  setting frequency  to  get  preferred
+           behaviour  on  these type  of  radios.  This would  require
+           hamlib changes as well.
+
+DDUtil Flex Radio 5000A - Chris n1cl - Unrcognized command error
+
+    g4wjs: Apparently this setup is  some sort on HRD emulation. Asked
+           for "HRD  Interface Information.txt".
+
+    g4wjs: Added  modes to interpreter  for this emulator.   Sent test
+           version to n1cl.
+
+    g4wjs: n1cl reports all working correctly. No split mode available
+           on the HRD emulator.
+
+    g4wjs: Fixed r4541 - Closed.
+
+Hamlib K3 - Harry hl1/wx8c - Protocol error reading spilt VFO mode when changing bands
+
+    g4wjs: Sent  tracing version.   Log shows hamlib  defect.  Patched
+           hamlib and sent test version.
+
+    g4wjs: Fixed in hamlib - Closed.
+
+Hamlib IC-9100 - Russell kf5rep -PTT doesn't work
+
+    g4wjs: Sent tracing version.
+
+    g4wjs: CAT  PTT was not  enabled in  hamlib for this  rig. Patched
+           hamlib to enable CAT PTT,  data modes and, get split status
+           which are also supported on the IC-9100. Sent test version.
+
+    g4wjs: kf5rep  reports fix working  and log shows no  issues, sent
+           non-trace version.
+
+    g4wjs: Fixed in hamlib - Closed.
+
+Hamlib IC-7700 - André ve2ahs - "Hamlib error: Command rejected by the rig while setting current VFO"
+
+    g4wjs:  This is  a  hamlib  issue. Patched  hamlib  and sent  test
+           version.
+
+    g4wjs: ve2ahs reports as working.
+
+    g4wjs: Patch sent upstream to hamlib team.
+
+    g4wjs: Fixed in hamlib - Closed.
+
+Hamlib IC-7200 - John wa2hip - Data mode not working
+
+    g4wjs: No support in hamlib, amended hamlib and sent test version.
+
+    g4wjs: Patch sent upstream to the hamlib team.
+
+    g4wjs: Fixed in hamlib - Closed.
+
+ - Bill g4wjs - Replying to "G4WJS NU8R" generates incorrect message
+
+Hamlib IC-7200 - John wa2hip - Mode not being set immediately
+
+    g4wjs: When WSJT-X is in charge  of the rig mode it doesn't always
+           set  it immediately  on start  up or  on exiting  Settings.
+           Also the behaviour seems different with USB vs. DATA.
+
+Hamlib - Chris n0jcf - DTR and RTS being asserted on open
+
+    g4wjs: The serial control line used for PTT should not be asserted
+     	   on rig open.   This is not happening when  the control line
+     	   being used is on the CAT serial port.
+
+    g4wjs: Hamlib defect fixed and patch accepted upstream.
+
+    g4wjs: Closed.
+
+KVASD - Jeff m1bcm - WSJT-X reporting KV decoder errors
+
+    g4wjs: As reported by m1bcm:
+
+	Problem signature:
+	  Problem Event Name:    APPCRASH
+	  Application Name:    kvasd.exe
+	  Application Version:    0.0.0.0
+	  Application Timestamp:    4f203152
+	  Fault Module Name:    ntdll.dll
+	  Fault Module Version:    6.3.9600.17278
+	  Fault Module Timestamp:    53eeb4a3
+	  Exception Code:    c0000005
+	  Exception Offset:    0003e5c9
+	  OS Version:    6.3.9600.2.0.0.768.101
+	  Locale ID:    2057
+	  Additional Information 1:    8192
+	  Additional Information 2:    81925e0a1b4bb5b5bcf88813ce0dd9bb
+	  Additional Information 3:    f5e9
+	  Additional Information 4:&nb sp;   f5e9e351fa57943f5ed0606c29443768
+
+	    which is an access violation.
+
+    g4wjs: Suggested  trying KVASD  v1.12.  No  further reports  of KV
+    	   decoder failures.
+
+Hamlib - Bill g4wjs - No option to force RTS/DTR low
+
+    g4wjs: Some users have both RTS  and DTR utilized for rig control,
+           a common  arrangement is to have  PTT on RTS and  CW or FSK
+           keying on  DTR for  example. On  *nix machines  these lines
+           will   go    high   on    port   open    unless   otherwise
+           specified. Therefore we need an option to force either line
+           low  to  mirror  the  current option  to  force  the  lines
+           high. The current do nothing  and leave serial line control
+           to the driver is also required.
